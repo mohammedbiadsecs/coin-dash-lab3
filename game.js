@@ -6,6 +6,8 @@ class CoinDash extends Phaser.Scene {
     const c = COIN_DASH;
     this.score = 0;
     this.finished = false;
+    this.isPaused = false;
+    this.pausedAt = 0;
     this.deadline = this.time.now + c.roundSeconds * 1000;
     this.physics.world.setBounds(0, 44, c.width, c.height - 44);
     this.add.grid(c.width / 2, c.height / 2, c.width, c.height, 40, 40,
@@ -35,6 +37,17 @@ class CoinDash extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys('W,A,S,D,R');
     this.input.keyboard.on('keydown-R', () => this.scene.restart());
+    this.input.keyboard.on('keydown-P', (event) => {
+      if (!event.repeat) this.togglePause();
+    });
+
+    const pausePanel = this.add.rectangle(c.width / 2, c.height / 2, 300, 100, 0x0a1120, 0.95);
+    const pauseText = this.add.text(c.width / 2, c.height / 2, 'PAUSED\nPress P to resume', {
+      font: '24px monospace', color: '#ffffff', align: 'center', lineSpacing: 10
+    }).setOrigin(0.5);
+    this.pauseOverlay = this.add.container(0, 0, [pausePanel, pauseText])
+      .setDepth(10)
+      .setVisible(false);
   }
 
   placeCoin() {
@@ -50,7 +63,7 @@ class CoinDash extends Phaser.Scene {
   }
 
   update() {
-    if (this.finished) return;
+    if (this.finished || this.isPaused) return;
     const dx = Number(this.cursors.right.isDown || this.keys.D.isDown)
       - Number(this.cursors.left.isDown || this.keys.A.isDown);
     const dy = Number(this.cursors.down.isDown || this.keys.S.isDown)
@@ -60,6 +73,23 @@ class CoinDash extends Phaser.Scene {
     const seconds = Math.max(0, Math.ceil((this.deadline - this.time.now) / 1000));
     this.hud.setText(`Coins: ${this.score}                       Time: ${seconds}s`);
     if (seconds === 0) this.finish('Time is up!');
+  }
+
+  togglePause() {
+    if (this.finished) return;
+
+    this.isPaused = !this.isPaused;
+    this.pauseOverlay.setVisible(this.isPaused);
+
+    if (this.isPaused) {
+      this.pausedAt = this.time.now;
+      this.player.body.setVelocity(0, 0);
+      this.physics.pause();
+    } else {
+      this.deadline += this.time.now - this.pausedAt;
+      this.pausedAt = 0;
+      this.physics.resume();
+    }
   }
 
   finish(reason) {
