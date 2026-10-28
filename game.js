@@ -1,10 +1,14 @@
 /* global Phaser, COIN_DASH */
+let sessionBestScore = 0;
+
 class CoinDash extends Phaser.Scene {
   constructor() { super('CoinDash'); }
 
   create() {
     const c = COIN_DASH;
     this.score = 0;
+    this.bestScore = Math.max(sessionBestScore, this.readBestScore());
+    sessionBestScore = this.bestScore;
     this.finished = false;
     this.deadline = this.time.now + c.roundSeconds * 1000;
     this.physics.world.setBounds(0, 44, c.width, c.height - 44);
@@ -29,12 +33,32 @@ class CoinDash extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.coin, () => {
       if (this.finished) return;
       this.score++;
+      if (this.score > this.bestScore) {
+        this.bestScore = this.score;
+        sessionBestScore = this.bestScore;
+        try {
+          window.localStorage.setItem('coin-dash-best-score', String(this.bestScore));
+        } catch {
+          // Keep the record for this session if storage is unavailable.
+        }
+      }
       this.placeCoin();
     });
     this.physics.add.overlap(this.player, this.drones, () => this.finish('A drone caught you!'));
     this.cursors = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys('W,A,S,D,R');
     this.input.keyboard.on('keydown-R', () => this.scene.restart());
+  }
+
+  readBestScore() {
+    try {
+      const value = window.localStorage.getItem('coin-dash-best-score');
+      if (value === null || !/^(0|[1-9]\d*)$/.test(value)) return 0;
+      const score = Number(value);
+      return Number.isSafeInteger(score) ? score : 0;
+    } catch {
+      return 0;
+    }
   }
 
   placeCoin() {
@@ -58,7 +82,7 @@ class CoinDash extends Phaser.Scene {
     const direction = new Phaser.Math.Vector2(dx, dy).normalize().scale(COIN_DASH.playerSpeed);
     this.player.body.setVelocity(direction.x, direction.y);
     const seconds = Math.max(0, Math.ceil((this.deadline - this.time.now) / 1000));
-    this.hud.setText(`Coins: ${this.score}                       Time: ${seconds}s`);
+    this.hud.setText(`Coins: ${this.score}   Best: ${this.bestScore}   Time: ${seconds}s`);
     if (seconds === 0) this.finish('Time is up!');
   }
 
