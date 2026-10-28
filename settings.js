@@ -6,5 +6,10 @@ window.COIN_DASH = {
   playerSpeed: 240,
   droneSpeed: 105,
   droneCount: 3,
+  difficulties: {
+    easy: { droneSpeed: 75, droneCount: 2 },
+    normal: { droneSpeed: 105, droneCount: 3 },
+    hard: { droneSpeed: 135, droneCount: 4 }
+  },
   colors: { background: 0x101c31, player: 0x71e8ce, coin: 0xffd166, drone: 0xff657a }
 };

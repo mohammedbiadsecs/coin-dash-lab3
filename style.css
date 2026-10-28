@@ -3,5 +3,8 @@ body { margin: 0; background: #0a1120; color: #e5edf7; font: 17px/1.5 system-ui,
 main { max-width: 850px; margin: 30px auto; padding: 0 20px; }
 header > p:first-child { color: #71e8ce; font-size: 12px; letter-spacing: .15em; }
 h1 { margin: 0; font-size: 40px; }
-#game { border: 1px solid #34445e; border-radius: 12px; overflow: hidden; }
+#game { border: 1px solid #34445e; border-radius: 12px; overflow: hidden; aspect-ratio: 8 / 5; display: grid; place-items: center; }
+.round-controls { display: flex; align-items: center; gap: 10px; margin: 20px 0 12px; }
+.round-controls select, .round-controls button { font: inherit; padding: 5px 10px; }
+.game-prompt { text-align: center; padding: 20px; }
 canvas { display: block; }

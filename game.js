@@ -4,8 +4,11 @@ class CoinDash extends Phaser.Scene {
 
   create() {
     const c = COIN_DASH;
+    this.difficulty = document.getElementById('difficulty').value;
+    const preset = c.difficulties[this.difficulty];
     this.score = 0;
     this.finished = false;
+    this.physics.resume();
     this.deadline = this.time.now + c.roundSeconds * 1000;
     this.physics.world.setBounds(0, 44, c.width, c.height - 44);
     this.add.grid(c.width / 2, c.height / 2, c.width, c.height, 40, 40,
@@ -19,12 +22,15 @@ class CoinDash extends Phaser.Scene {
     this.coin.body.setCircle(9);
     this.placeCoin();
     this.drones = this.physics.add.group();
-    for (let i = 0; i < c.droneCount; i++) {
-      const drone = this.add.rectangle(90 + i * 270, 100, 26, 26, c.colors.drone);
+    for (let i = 0; i < preset.droneCount; i++) {
+      const x = preset.droneCount === c.droneCount
+        ? 90 + i * 270
+        : (i + 1) * c.width / (preset.droneCount + 1);
+      const drone = this.add.rectangle(x, 100, 26, 26, c.colors.drone);
       this.drones.add(drone);
       drone.body.setCollideWorldBounds(true).setBounce(1, 1);
       const angle = (35 + i * 105) * Math.PI / 180;
-      drone.body.setVelocity(Math.cos(angle) * c.droneSpeed, Math.sin(angle) * c.droneSpeed);
+      drone.body.setVelocity(Math.cos(angle) * preset.droneSpeed, Math.sin(angle) * preset.droneSpeed);
     }
     this.physics.add.overlap(this.player, this.coin, () => {
       if (this.finished) return;
@@ -58,7 +64,7 @@ class CoinDash extends Phaser.Scene {
     const direction = new Phaser.Math.Vector2(dx, dy).normalize().scale(COIN_DASH.playerSpeed);
     this.player.body.setVelocity(direction.x, direction.y);
     const seconds = Math.max(0, Math.ceil((this.deadline - this.time.now) / 1000));
-    this.hud.setText(`Coins: ${this.score}                       Time: ${seconds}s`);
+    this.hud.setText(`${this.difficulty.toUpperCase()}  Coins: ${this.score}                  Time: ${seconds}s`);
     if (seconds === 0) this.finish('Time is up!');
   }
 
@@ -69,18 +75,25 @@ class CoinDash extends Phaser.Scene {
     const c = COIN_DASH;
     this.add.rectangle(c.width / 2, c.height / 2, 460, 150, 0x0a1120, 0.95);
     this.add.text(c.width / 2, c.height / 2,
-      `${reason}\n${this.score} coins collected\nPress R to try again`,
+      `${reason}\n${this.score} coins collected\nPress R or Start round to try again`,
       { font: '24px monospace', color: '#ffffff', align: 'center', lineSpacing: 12 }
     ).setOrigin(0.5);
   }
 }
-window.coinDashGame = new Phaser.Game({
-  type: Phaser.AUTO,
-  parent: 'game',
-  width: COIN_DASH.width,
-  height: COIN_DASH.height,
-  backgroundColor: COIN_DASH.colors.background,
-  physics: { default: 'arcade', arcade: { debug: false } },
-  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_HORIZONTALLY },
-  scene: CoinDash
+document.getElementById('start-round').addEventListener('click', () => {
+  if (window.coinDashGame) {
+    window.coinDashGame.scene.getScene('CoinDash').scene.restart();
+    return;
+  }
+  document.getElementById('game').replaceChildren();
+  window.coinDashGame = new Phaser.Game({
+    type: Phaser.AUTO,
+    parent: 'game',
+    width: COIN_DASH.width,
+    height: COIN_DASH.height,
+    backgroundColor: COIN_DASH.colors.background,
+    physics: { default: 'arcade', arcade: { debug: false } },
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_HORIZONTALLY },
+    scene: CoinDash
+  });
 });

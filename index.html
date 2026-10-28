@@ -9,8 +9,19 @@
 <main>
   <header><p>LAB 3 · STARTER GAME</p><h1>Coin Dash</h1>
   <p>Collect yellow coins. Dodge red drones. How many can you collect in 45 seconds?</p></header>
-  <div id="game" aria-label="Coin Dash game. Move with arrow keys or WASD."></div>
-  <p>Move: <strong>arrow keys / WASD</strong> · Restart: <strong>R</strong></p>
+  <div class="round-controls">
+    <label for="difficulty">Difficulty</label>
+    <select id="difficulty">
+      <option value="easy">Easy</option>
+      <option value="normal" selected>Normal</option>
+      <option value="hard">Hard</option>
+    </select>
+    <button id="start-round" type="button">Start round</button>
+  </div>
+  <div id="game" aria-label="Coin Dash game. Move with arrow keys or WASD.">
+    <p class="game-prompt">Choose a difficulty, then start the round.</p>
+  </div>
+  <p>Move: <strong>arrow keys / WASD</strong> · Restart: <strong>R</strong> · Changing difficulty takes effect next round.</p>
 </main>
 <script src="vendor/phaser-3.90.0.min.js"></script>
 <script src="settings.js"></script><script src="game.js"></script>
