@@ -9,6 +9,11 @@ window.COIN_DASH = {
   powerUpSpawnSeconds: 8,
   droneSpeed: 105,
   droneCount: 3,
+  difficulties: {
+    easy: { droneSpeed: 75, droneCount: 2 },
+    normal: { droneSpeed: 105, droneCount: 3 },
+    hard: { droneSpeed: 135, droneCount: 4 }
+  },
   colors: {
     background: 0x101c31,
     player: 0x71e8ce,
