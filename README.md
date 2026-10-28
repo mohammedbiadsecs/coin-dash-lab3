@@ -46,3 +46,4 @@ MIT licence in LICENSE.txt. Phaser documentation:
 https://docs.phaser.io/phaser/getting-started/making-your-first-phaser-game
 
 Lab 3 collaboration: Both partners use separate laptops and Git clones.
+Lab 3: Mohammed Biadse verified the shared starter game.
