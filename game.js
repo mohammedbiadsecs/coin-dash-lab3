@@ -1,4 +1,6 @@
 /* global Phaser, COIN_DASH */
+let sessionBestScore = 0;
+
 class CoinDash extends Phaser.Scene {
   constructor() { super('CoinDash'); }
 
@@ -7,6 +9,8 @@ class CoinDash extends Phaser.Scene {
     this.difficulty = document.getElementById('difficulty').value;
     const preset = c.difficulties[this.difficulty];
     this.score = 0;
+    this.bestScore = Math.max(sessionBestScore, this.readBestScore());
+    sessionBestScore = this.bestScore;
     this.finished = false;
     this.isPaused = false;
     this.pausedAt = 0;
@@ -71,6 +75,15 @@ class CoinDash extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.coin, () => {
       if (this.finished) return;
       this.score++;
+      if (this.score > this.bestScore) {
+        this.bestScore = this.score;
+        sessionBestScore = this.bestScore;
+        try {
+          window.localStorage.setItem('coin-dash-best-score', String(this.bestScore));
+        } catch {
+          // Keep the record for this session if storage is unavailable.
+        }
+      }
       this.placeCoin();
     });
     this.physics.add.overlap(this.player, this.powerUp, () => this.collectPowerUp());
@@ -97,6 +110,17 @@ class CoinDash extends Phaser.Scene {
         if (!this.finished && !this.isPaused && !this.powerUp.visible) this.spawnPowerUp();
       }
     });
+  }
+
+  readBestScore() {
+    try {
+      const value = window.localStorage.getItem('coin-dash-best-score');
+      if (value === null || !/^(0|[1-9]\d*)$/.test(value)) return 0;
+      const score = Number(value);
+      return Number.isSafeInteger(score) ? score : 0;
+    } catch {
+      return 0;
+    }
   }
 
   placeCoin() {
@@ -177,7 +201,7 @@ class CoinDash extends Phaser.Scene {
         .setScale(1 + Math.sin(this.time.now / 100) * 0.08);
     }
     const seconds = Math.max(0, Math.ceil((this.deadline - this.time.now) / 1000));
-    this.hud.setText(`${this.difficulty.toUpperCase()}  Coins: ${this.score}`);
+    this.hud.setText(`${this.difficulty.toUpperCase()}  Coins ${this.score}  Best ${this.bestScore}`);
     this.timerText.setText(`Time: ${seconds}s`);
     if (seconds === 0) this.finish('Time is up!');
   }
