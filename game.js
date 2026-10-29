@@ -1,5 +1,13 @@
 /* global Phaser, COIN_DASH */
 let sessionBestScore = 0;
+const instructionsDialog = document.getElementById('instructions-dialog');
+let pausedForInstructions = false;
+let restoreKeyboardAfterInstructions = false;
+
+function getActiveGameScene() {
+  const scene = window.coinDashGame?.scene.getScene('CoinDash');
+  return scene?.scene.isActive() ? scene : null;
+}
 
 class CoinDash extends Phaser.Scene {
   constructor() { super('CoinDash'); }
@@ -207,7 +215,7 @@ class CoinDash extends Phaser.Scene {
   }
 
   handlePauseKey(event) {
-    if (!event.repeat) this.togglePause();
+    if (!instructionsDialog.open && !event.repeat) this.togglePause();
   }
 
   togglePause() {
@@ -232,6 +240,7 @@ class CoinDash extends Phaser.Scene {
   }
 
   restartScene() {
+    if (instructionsDialog.open) return;
     if (this.speedBoostActive) this.clearSpeedBoost();
     this.physics.resume();
     this.scene.restart();
@@ -271,4 +280,25 @@ document.getElementById('start-round').addEventListener('click', () => {
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_HORIZONTALLY },
     scene: CoinDash
   });
+});
+
+document.getElementById('open-instructions').addEventListener('click', () => {
+  const scene = getActiveGameScene();
+  pausedForInstructions = Boolean(scene && !scene.finished && !scene.isPaused);
+  if (pausedForInstructions) scene.togglePause();
+  restoreKeyboardAfterInstructions = Boolean(scene?.input.keyboard.enabled);
+  if (restoreKeyboardAfterInstructions) scene.input.keyboard.enabled = false;
+  instructionsDialog.showModal();
+});
+
+document.getElementById('close-instructions').addEventListener('click', () => {
+  instructionsDialog.close();
+});
+
+instructionsDialog.addEventListener('close', () => {
+  const scene = getActiveGameScene();
+  if (restoreKeyboardAfterInstructions && scene) scene.input.keyboard.enabled = true;
+  if (pausedForInstructions && scene && !scene.finished && scene.isPaused) scene.togglePause();
+  pausedForInstructions = false;
+  restoreKeyboardAfterInstructions = false;
 });
