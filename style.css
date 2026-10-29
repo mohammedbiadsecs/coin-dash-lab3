@@ -4,7 +4,25 @@ main { max-width: 850px; margin: 30px auto; padding: 0 20px; }
 header > p:first-child { color: #71e8ce; font-size: 12px; letter-spacing: .15em; }
 h1 { margin: 0; font-size: 40px; }
 #game { border: 1px solid #34445e; border-radius: 12px; overflow: hidden; aspect-ratio: 8 / 5; display: grid; place-items: center; }
-.round-controls { display: flex; align-items: center; gap: 10px; margin: 20px 0 12px; }
+.round-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 20px 0 12px; }
 .round-controls select, .round-controls button { font: inherit; padding: 5px 10px; }
+.secondary-button { border: 1px solid #71e8ce; border-radius: 6px; background: transparent; color: #e5edf7; font: inherit; padding: 5px 10px; cursor: pointer; }
+#open-instructions { margin-left: auto; }
+.secondary-button:hover { background: #183249; }
+.secondary-button:focus-visible { outline: 3px solid #ffd166; outline-offset: 2px; }
 .game-prompt { text-align: center; padding: 20px; }
 canvas { display: block; }
+#instructions-dialog { width: min(620px, calc(100% - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 0; border: 1px solid #34445e; border-radius: 12px; background: #101c31; color: #e5edf7; }
+#instructions-dialog::backdrop { background: rgba(5, 10, 20, .78); }
+.instructions-panel { padding: clamp(20px, 5vw, 32px); }
+.instructions-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.instructions-header p { margin: 0; color: #71e8ce; font-size: 12px; letter-spacing: .15em; }
+.instructions-header h2 { margin: 2px 0 12px; font-size: 30px; }
+.instructions-list { display: grid; gap: 0; margin: 20px 0 0; padding: 0; list-style: none; border-top: 1px solid #34445e; }
+.instructions-list li { display: grid; grid-template-columns: 145px 1fr; gap: 16px; padding: 12px 0; border-bottom: 1px solid #34445e; }
+.instructions-list strong { color: #71e8ce; }
+kbd { display: inline-block; min-width: 1.8em; margin-right: 4px; padding: 1px 5px; border: 1px solid #60718c; border-radius: 4px; background: #0a1120; color: #fff; font: 14px/1.5 ui-monospace, monospace; text-align: center; }
+@media (max-width: 520px) {
+  #open-instructions { margin-left: 0; }
+  .instructions-list li { grid-template-columns: 1fr; gap: 4px; }
+}

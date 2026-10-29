@@ -17,12 +17,35 @@
       <option value="hard">Hard</option>
     </select>
     <button id="start-round" type="button">Start round</button>
+    <button id="open-instructions" class="secondary-button" type="button"
+      aria-haspopup="dialog" aria-controls="instructions-dialog">How to Play</button>
   </div>
   <div id="game" aria-label="Coin Dash game. Move with arrow keys or WASD. Pause with P.">
     <p class="game-prompt">Choose a difficulty, then start the round.</p>
   </div>
   <p>Move: <strong>arrow keys / WASD</strong> · Pause: <strong>P</strong> · Restart: <strong>R</strong> · Changing difficulty takes effect next round.</p>
 </main>
+<dialog id="instructions-dialog" aria-labelledby="instructions-title" aria-describedby="instructions-summary">
+  <div class="instructions-panel">
+    <div class="instructions-header">
+      <div>
+        <p>GAME GUIDE</p>
+        <h2 id="instructions-title">How to Play</h2>
+      </div>
+      <button id="close-instructions" class="secondary-button" type="button">Close</button>
+    </div>
+    <p id="instructions-summary">Collect as many coins as you can before time runs out, without touching a red drone.</p>
+    <ul class="instructions-list">
+      <li><strong>Move</strong><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or the Arrow Keys</span></li>
+      <li><strong>Pause / Resume</strong><span>Press <kbd>P</kbd></span></li>
+      <li><strong>Restart</strong><span>Press <kbd>R</kbd></span></li>
+      <li><strong>Difficulty</strong><span>Choose Easy, Normal, or Hard before a round. Harder modes add more, faster drones.</span></li>
+      <li><strong>Yellow coins</strong><span>Collect them to increase your score.</span></li>
+      <li><strong>Pink star</strong><span>Grab it for a temporary speed boost.</span></li>
+      <li><strong>Best score</strong><span>Your record is saved in this browser and persists between visits.</span></li>
+    </ul>
+  </div>
+</dialog>
 <script src="vendor/phaser-3.90.0.min.js"></script>
 <script src="settings.js"></script><script src="game.js"></script>
 </body>
